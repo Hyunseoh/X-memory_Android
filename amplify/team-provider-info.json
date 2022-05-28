@@ -1,0 +1,26 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-xmemory-dev-160240-authRole",
+      "UnauthRoleArn": "arn:aws:iam::940168446867:role/amplify-xmemory-dev-160240-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::940168446867:role/amplify-xmemory-dev-160240-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-xmemory-dev-160240-deployment",
+      "UnauthRoleName": "amplify-xmemory-dev-160240-unauthRole",
+      "StackName": "amplify-xmemory-dev-160240",
+      "StackId": "arn:aws:cloudformation:us-east-2:940168446867:stack/amplify-xmemory-dev-160240/2b9f44c0-de54-11ec-8e98-026e9fb16048",
+      "AmplifyAppId": "d1om16kirhbedl"
+    },
+    "categories": {
+      "auth": {
+        "xmemory9c6d0746": {}
+      },
+      "storage": {
+        "xmemoryce63604f": {
+          "bucketName": "cloud01-2",
+          "region": "us-east-2"
+        }
+      }
+    }
+  }
+}
