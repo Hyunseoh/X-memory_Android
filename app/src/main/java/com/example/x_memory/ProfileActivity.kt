@@ -23,14 +23,15 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var binding: ActivityProfileBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        var login:Login? = null
 
         super.onCreate(savedInstanceState)
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
 //        auth = AWSMobileClient.getInstance()
-//        binding.accountName.text = login_id.text
+
+        val userID = SharedPreferences.prefs.getString("id", "")
+        binding.accountName.text = userID
 
         binding.btnLogout.setOnClickListener {
             logout_function()

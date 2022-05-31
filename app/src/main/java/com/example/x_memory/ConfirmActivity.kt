@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.amazonaws.auth.CognitoCachingCredentialsProvider
@@ -41,7 +42,7 @@ class ConfirmActivity : AppCompatActivity() {
             photoUri= getIntent().getParcelableExtra("photo")
             val imageBitmap = photoUri?.let { ImageDecoder.createSource(this.contentResolver, it) }
             binding.confirm.setImageBitmap(imageBitmap?.let { ImageDecoder.decodeBitmap(it) })
-            filename_photo = "/" + userID + photoUri?.lastPathSegment
+            filename_photo = "/" + userID + "/" + photoUri?.lastPathSegment
 
 //            Toast.makeText(this, photoUri?.path, Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
@@ -52,7 +53,9 @@ class ConfirmActivity : AppCompatActivity() {
             Imagedata = getIntent().getParcelableExtra("album")
             val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, Imagedata)
             binding.confirm.setImageBitmap(bitmap)
-            filename_album = "/" + userID + Imagedata?.lastPathSegment + ".jpg"
+            filename_album = "/" + userID + "/" + Imagedata?.lastPathSegment + ".jpg"
+
+//            https://cloud01-2.s3.us-east-2.amazonaws.com/public/hyunjin/image:24979.jpg
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -106,6 +109,7 @@ class ConfirmActivity : AppCompatActivity() {
             override fun onProgressChanged(id: Int, current: Long, total: Long) {
                 val done = (((current.toDouble() / total) * 100.0).toInt())
                 Log.d("MYTAG", "UPLOAD - - ID: $id, percent done = $done")
+                Toast.makeText(this@ConfirmActivity, "파일을 성공적으로 업로드했습니다.", Toast.LENGTH_SHORT).show()
             }
 
             override fun onError(id: Int, ex: Exception) {

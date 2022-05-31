@@ -34,7 +34,8 @@ class AuthActivity : AppCompatActivity() {
 
         var retrofit = Retrofit.Builder()
             .client(client)
-            .baseUrl("http://xmemory.thdus.net")
+//            .baseUrl("http://xmemory.thdus.net")
+            .baseUrl("http://121.172.128.251:8000")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         var loginService: LoginService = retrofit.create(LoginService::class.java)
