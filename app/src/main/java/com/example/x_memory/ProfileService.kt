@@ -6,14 +6,11 @@ import retrofit2.http.FormUrlEncoded
 import retrofit2.http.Header
 import retrofit2.http.POST
 
-interface LoginService{
-
+interface ProfileService {
     @FormUrlEncoded
-    @POST("/app_login/")
-    fun requestLogin(
+    @POST("/app_profile/")
+    fun requestProfile(
         @Header("Authorization") token: String?,
-        @Field("userid") userid:String,
-        @Field("userpw") userpw:String
-    ) : Call<Login>
-
+        @Field("tags") tag: String?,
+    ) : Call<Profile>
 }

@@ -1,5 +1,6 @@
 package com.example.x_memory
 
+import android.content.Intent
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
@@ -8,6 +9,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.amazonaws.auth.CognitoCachingCredentialsProvider
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener
@@ -18,11 +20,20 @@ import com.amazonaws.regions.Region
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
 import com.example.x_memory.databinding.ActivityConfirmBinding
+import okhttp3.JavaNetCookieJar
+import okhttp3.OkHttpClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.*
+import java.net.CookieManager
 
 
 private lateinit var binding: ActivityConfirmBinding
-
+private lateinit var pathstream : InputStream
+private lateinit var filename : String
 class ConfirmActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -31,19 +42,31 @@ class ConfirmActivity : AppCompatActivity() {
 
         binding = ActivityConfirmBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        var photoUri : Uri? = null
-        lateinit var filename_photo : String
 
-        var Imagedata : Uri? = null
-        lateinit var filename_album : String
+        var photoUri : Uri?
+        lateinit var filename_photo : String
+        var Imagedata: Uri?
         val userID = SharedPreferences.prefs.getString("id", "")
+
+        val client = OkHttpClient.Builder()
+            .cookieJar(JavaNetCookieJar(CookieManager())) //쿠키매니저 연결
+            .build()
+
+        var retrofit = Retrofit.Builder()
+            .client(client)
+            .baseUrl("http://xmemory.thdus.net")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        var uploadService: UploadService = retrofit.create(UploadService::class.java)
 
         try {
             photoUri= getIntent().getParcelableExtra("photo")
             val imageBitmap = photoUri?.let { ImageDecoder.createSource(this.contentResolver, it) }
             binding.confirm.setImageBitmap(imageBitmap?.let { ImageDecoder.decodeBitmap(it) })
-            filename_photo = "/" + userID + "/" + photoUri?.lastPathSegment
-
+            // 카메라 사진 경로, InputStream 변환
+            filename_photo = "/" + userID + "/" + photoUri?.lastPathSegment.toString()
+            pathstream = photoUri?.let { contentResolver.openInputStream(it) }!!
+            filename = photoUri?.lastPathSegment.toString()
 //            Toast.makeText(this, photoUri?.path, Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -53,7 +76,10 @@ class ConfirmActivity : AppCompatActivity() {
             Imagedata = getIntent().getParcelableExtra("album")
             val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, Imagedata)
             binding.confirm.setImageBitmap(bitmap)
-            filename_album = "/" + userID + "/" + Imagedata?.lastPathSegment + ".jpg"
+            // 앨범 사진 경로, InputStream 변환
+            filename_photo = "/" + userID + "/" + Imagedata?.lastPathSegment + ".jpg"
+            pathstream = Imagedata?.let { contentResolver.openInputStream(it) }!!
+            filename = Imagedata?.lastPathSegment + ".jpg"
 
 //            https://cloud01-2.s3.us-east-2.amazonaws.com/public/hyunjin/image:24979.jpg
 
@@ -62,41 +88,56 @@ class ConfirmActivity : AppCompatActivity() {
         }
 
         binding.downloadButton.setOnClickListener {
+            uploadWithTransferUtility(filename_photo,pathstream)
+            val token = "Token " + SharedPreferences.prefs.getString("token", "")
+            uploadService.requestUpload(token, filename).enqueue(object: Callback<Upload> {
+                override fun onFailure(call: Call<Upload>, t: Throwable) {
 
-            val photosteram = photoUri?.let { contentResolver.openInputStream(it) }
-            if (photosteram != null) {
-                uploadWithTransferUtility(filename_photo,photosteram)
-            }
-            val imagesteram = Imagedata?.let { contentResolver.openInputStream(it) }
-            if (imagesteram != null) {
-                uploadWithTransferUtility(filename_album,imagesteram)
-            }
+                    var dialog = AlertDialog.Builder(this@ConfirmActivity)
+                    dialog.setTitle("에러")
+                    dialog.setMessage("호출실패했습니다.")
+                    dialog.show()
+                }
+
+                override fun onResponse(call: Call<Upload>, response: Response<Upload>) {
+                    var upload = response.body()
+                    Log.d("upload","code : "+upload?.code)
+                    if( upload?.code == "200") {
+                        Toast.makeText(applicationContext, "저장됐습니다!", Toast.LENGTH_SHORT).show()
+                        val i = Intent(this@ConfirmActivity, ProfileActivity::class.java)
+                        startActivity(i)
+                        finish()
+                    }
+                    else {
+                        Toast.makeText(applicationContext, "저장 실패", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            })
         }
 
     }
 
     fun uploadWithTransferUtility(fileName: String, file: InputStream) {
 
+        val CognitoPoolId = getString(R.string.CognitoPoolId)
+        val BucketName = getString(R.string.BucketName)
+
         val credentialsProvider = CognitoCachingCredentialsProvider(
             applicationContext,
-            "us-east-2:0f532ce8-1def-48c4-b741-c768ffaf85b4", // 자격 증명 풀 ID
+            CognitoPoolId, // 자격 증명 풀 ID
             Regions.US_EAST_2 // 리전
         )
 
         TransferNetworkLossHandler.getInstance(applicationContext)
 
-        val AWS_STORAGE_BUCKET_NAME = "cloud01-2"
+        val AWS_STORAGE_BUCKET_NAME = BucketName
         val transferUtility = TransferUtility.builder()
             .context(applicationContext)
             .defaultBucket(AWS_STORAGE_BUCKET_NAME)
             .s3Client(AmazonS3Client(credentialsProvider, Region.getRegion(Regions.US_EAST_2)))
             .build()
 
-        /* Store the new created Image file path */
-
         val uploadObserver = transferUtility.upload("public${fileName}", file)
-
-        //CannedAccessControlList.PublicRead 읽기 권한 추가
 
         // Attach a listener to the observer
         uploadObserver.setTransferListener(object : TransferListener {
@@ -116,14 +157,7 @@ class ConfirmActivity : AppCompatActivity() {
                 Log.d("MYTAG", "UPLOAD ERROR - - ID: $id - - EX: ${ex.message.toString()}")
             }
         })
-
-        // If you prefer to long-poll for updates
-        if (uploadObserver.state == TransferState.COMPLETED) {
-            /* Handle completion */
-
-        }
     }
-
 
 }
 

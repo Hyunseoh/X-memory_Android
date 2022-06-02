@@ -34,8 +34,8 @@ class AuthActivity : AppCompatActivity() {
 
         var retrofit = Retrofit.Builder()
             .client(client)
-//            .baseUrl("http://xmemory.thdus.net")
-            .baseUrl("http://121.172.128.251:8000")
+            .baseUrl("http://xmemory.thdus.net")
+//            .baseUrl("http://121.172.128.251:8000")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         var loginService: LoginService = retrofit.create(LoginService::class.java)
@@ -44,8 +44,8 @@ class AuthActivity : AppCompatActivity() {
         binding.signInButton.setOnClickListener{
             var text1 = login_id.text.toString()
             var text2 = login_paw.text.toString()
-
-            loginService.requestLogin(text1,text2).enqueue(object: Callback<Login> {
+            val token = "Token " + SharedPreferences.prefs.getString("token", "")
+            loginService.requestLogin(token, text1,text2).enqueue(object: Callback<Login> {
                 override fun onFailure(call: Call<Login>, t: Throwable) {
 
                     var dialog = AlertDialog.Builder(this@AuthActivity)
@@ -58,8 +58,11 @@ class AuthActivity : AppCompatActivity() {
                     login = response.body()
                     Log.d("LOGIN","msg : "+login?.msg)
                     Log.d("LOGIN","code : "+login?.code)
-                    if( login?.code == "0000") {
-                        val id = SharedPreferences.prefs.setString("id", text1)
+                    // 코드 200번이 들어왔을 때 로그인 성공
+                    if( login?.code == "200") {
+                        //id, token 저장
+                        SharedPreferences.prefs.setString("id", text1)
+                        login?.token?.let { it1 -> SharedPreferences.prefs.setString("token", it1) }
 
                         Toast.makeText(applicationContext, "환영합니다!", Toast.LENGTH_SHORT).show()
                         val i = Intent(this@AuthActivity, MainActivity::class.java)
