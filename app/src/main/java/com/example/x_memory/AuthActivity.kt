@@ -44,8 +44,8 @@ class AuthActivity : AppCompatActivity() {
         binding.signInButton.setOnClickListener{
             var text1 = login_id.text.toString()
             var text2 = login_paw.text.toString()
-            val token = "Token " + SharedPreferences.prefs.getString("token", "")
-            loginService.requestLogin(token, text1,text2).enqueue(object: Callback<Login> {
+//            val token = "Token " + SharedPreferences.prefs.getString("token", "")
+            loginService.requestLogin(text1,text2).enqueue(object: Callback<Login> {
                 override fun onFailure(call: Call<Login>, t: Throwable) {
 
                     var dialog = AlertDialog.Builder(this@AuthActivity)

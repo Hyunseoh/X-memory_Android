@@ -11,7 +11,7 @@ interface LoginService{
     @FormUrlEncoded
     @POST("/app_login/")
     fun requestLogin(
-        @Header("Authorization") token: String?,
+//        @Header("Authorization") token: String?,
         @Field("userid") userid:String,
         @Field("userpw") userpw:String
     ) : Call<Login>
