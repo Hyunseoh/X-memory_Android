@@ -256,6 +256,9 @@ class MainActivity : AppCompatActivity() {
 //                    })
                 return true
             }
+            R.id.menu_button -> {
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }

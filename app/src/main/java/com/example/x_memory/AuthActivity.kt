@@ -1,6 +1,7 @@
 package com.example.x_memory
 
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -65,15 +66,20 @@ class AuthActivity : AppCompatActivity() {
                         login?.token?.let { it1 -> SharedPreferences.prefs.setString("token", it1) }
 
                         Toast.makeText(applicationContext, "환영합니다!", Toast.LENGTH_SHORT).show()
-                        val i = Intent(this@AuthActivity, MainActivity::class.java)
+                        val i = Intent(this@AuthActivity, ProfileActivity::class.java)
                         startActivity(i)
                         finish()
                     }
                     else {
-                        Toast.makeText(applicationContext, "잘못된 정보입니다.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(applicationContext, "다시 입력해주십시오", Toast.LENGTH_SHORT).show()
                     }
                 }
             })
+        }
+
+        binding.signUpButton.setOnClickListener {
+            var intent = Intent(Intent.ACTION_VIEW, Uri.parse("http://xmemory.thdus.net/signup/"))
+            startActivity(intent)
         }
     }
 }
