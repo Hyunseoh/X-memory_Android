@@ -1,16 +1,22 @@
 package com.example.x_memory
 
+import android.Manifest
+import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.navigation.ui.AppBarConfiguration
 import com.example.x_memory.databinding.ActivityProfileBinding
 import kotlinx.android.synthetic.main.activity_profile.*
@@ -22,10 +28,25 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
 import java.net.CookieManager
+import java.text.SimpleDateFormat
 
 
 class ProfileActivity : AppCompatActivity() {
+
+    private val CAMERA = 100
+    private val GALLERY = 200
+
+
+    private var photoUri: Uri? = null
+
+    // Permisisons
+    val PERMISSIONS = arrayOf(
+        Manifest.permission.CAMERA,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    )
     
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityProfileBinding
@@ -60,7 +81,7 @@ class ProfileActivity : AppCompatActivity() {
 
                 var dialog = AlertDialog.Builder(this@ProfileActivity)
                 dialog.setTitle("에러")
-                dialog.setMessage("호출실패했습니다.")
+                dialog.setMessage("호출에 실패했습니다")
                 dialog.show()
             }
 
@@ -68,9 +89,6 @@ class ProfileActivity : AppCompatActivity() {
                 var profile = response.body()
                 if( profile?.code == "200") {
                     binding.accountCount.text = profile?.count.toString()
-//                    val i = Intent(this@ProfileActivity, ProfileActivity::class.java)
-//                    startActivity(i)
-//                    finish()
                 }
                 else {
                     Toast.makeText(applicationContext, "저장 실패", Toast.LENGTH_SHORT).show()
@@ -87,6 +105,10 @@ class ProfileActivity : AppCompatActivity() {
         myWebView.settings.domStorageEnabled
         myWebView.settings.builtInZoomControls
         myWebView.settings.displayZoomControls
+        myWebView.settings.useWideViewPort = true
+        myWebView.settings.loadWithOverviewMode = true
+        myWebView.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
+
 
         val extraHeaders: MutableMap<String, String> = mutableMapOf()
         extraHeaders.put("Authorization", token)
@@ -108,6 +130,61 @@ class ProfileActivity : AppCompatActivity() {
         binding.btnLogout.setOnClickListener {
             logout_function()
         }
+
+        binding.cameraBtn.setOnClickListener {
+            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            val photoFile = File(
+                File("${filesDir}/image").apply{
+                    if(!this.exists()){
+                        this.mkdirs()
+                    }
+                },
+                newJpgFileName()
+            )
+            photoUri = FileProvider.getUriForFile(
+                this,
+                "com.example.x_memory.fileprovider",
+                photoFile
+            )
+            takePictureIntent.resolveActivity(packageManager)?.also{
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+                startActivityForResult(takePictureIntent, CAMERA)
+            }
+        }
+
+        binding.albumBtn.setOnClickListener {
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.setType("image/*")
+            startActivityForResult(intent,GALLERY)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                CAMERA -> {
+                    val i = Intent(this@ProfileActivity, ConfirmActivity::class.java)
+                    i.putExtra("photo", photoUri)
+                    startActivity(i)
+                }
+                GALLERY -> {
+                    var Imagedata: Uri? = data?.data
+                    try {
+                        val i = Intent(this@ProfileActivity, ConfirmActivity::class.java)
+                        i.putExtra("album", Imagedata)
+                        startActivity(i)
+                    } catch (e:Exception) { e.printStackTrace() }
+
+                }
+            }
+        }
+    }
+
+    private fun newJpgFileName() : String {
+        val sdf = SimpleDateFormat("yyyyMMdd_HHmmss")
+        val filename = sdf.format(System.currentTimeMillis())
+        return "${filename}.jpg"
     }
 
 
@@ -124,6 +201,10 @@ class ProfileActivity : AppCompatActivity() {
                 logout_function()
                 return true
             }
+            R.id.menu_button -> {
+                menu_button()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -132,18 +213,11 @@ class ProfileActivity : AppCompatActivity() {
         val i = Intent(this@ProfileActivity, AuthActivity::class.java)
         startActivity(i)
         finish()
-//        AWSMobileClient.getInstance().initialize(
-//            applicationContext,
-//            object : Callback<UserStateDetails?> {
-//                override fun onResult(userStateDetails: UserStateDetails?) {
-//                    // 로그아웃 후 로그인 창으로 이동
-//                    AWSMobileClient.getInstance().signOut()
-//                    val i = Intent(this@ProfileActivity, AuthActivity::class.java)
-//                    startActivity(i)
-//                    finish()
-//                }
-//
-//                override fun onError(e: Exception) {}
-//            })
+    }
+
+    fun menu_button(){
+        val i = Intent(this@ProfileActivity, MainActivity::class.java)
+        startActivity(i)
+        finish()
     }
 }

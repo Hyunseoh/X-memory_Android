@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".ProfileActivity">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="100dp">
@@ -24,45 +24,53 @@
             android:layout_height="40dp"
             android:layout_alignParentBottom="true"
             android:layout_toRightOf="@+id/account_iv_profile"
-            android:text="Logout" />
+            android:text="Logout"
+            />
+
         <LinearLayout
-            android:gravity="center"
-            android:layout_toRightOf="@+id/account_iv_profile"
-            android:layout_above="@+id/btn_logout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_above="@+id/btn_logout"
+            android:layout_toRightOf="@+id/account_iv_profile"
+            android:gravity="center">
+
             <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content">
+                android:orientation="vertical">
+
                 <TextView
-                    android:text="계정"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:text="계정" />
+
                 <TextView
                     android:id="@+id/account_name"
-                    android:text="0"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:text="0" />
 
             </LinearLayout>
+
             <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content">
+                android:orientation="vertical">
+
                 <TextView
-                    android:text="올린 사진"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:text="올린 사진" />
+
                 <TextView
                     android:id="@+id/account_count"
-                    android:text="0"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:text="0" />
 
             </LinearLayout>
 
@@ -71,16 +79,42 @@
 
     </RelativeLayout>
 
-    <WebView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/webview"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/account_recycler"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-    </androidx.recyclerview.widget.RecyclerView>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/camera_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_round"
+            android:drawableTop="@drawable/ic_camera"
+            android:paddingTop="5dp"
+            android:text="카메라에서 추가"
+            android:textColor="#2196F3"
+            android:textSize="18sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/album_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_round"
+            android:drawableTop="@drawable/ic_album"
+            android:paddingTop="5dp"
+            android:text="앨범에서 추가"
+            android:textColor="#2196F3"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <WebView
+        android:id="@+id/webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 
 </LinearLayout>
