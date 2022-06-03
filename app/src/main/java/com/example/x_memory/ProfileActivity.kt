@@ -101,10 +101,10 @@ class ProfileActivity : AppCompatActivity() {
         binding.accountName.text = userID
         var myWebView: WebView = findViewById(R.id.webview)
 
-        myWebView.settings.javaScriptEnabled
-        myWebView.settings.domStorageEnabled
-        myWebView.settings.builtInZoomControls
-        myWebView.settings.displayZoomControls
+        myWebView.settings.javaScriptEnabled = true
+        myWebView.settings.domStorageEnabled = true
+        myWebView.settings.builtInZoomControls = true
+        myWebView.settings.displayZoomControls = true
         myWebView.settings.useWideViewPort = true
         myWebView.settings.loadWithOverviewMode = true
         myWebView.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
