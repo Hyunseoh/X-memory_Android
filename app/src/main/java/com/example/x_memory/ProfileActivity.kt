@@ -38,18 +38,11 @@ class ProfileActivity : AppCompatActivity() {
     private val CAMERA = 100
     private val GALLERY = 200
 
-
     private var photoUri: Uri? = null
-
-    // Permisisons
-    val PERMISSIONS = arrayOf(
-        Manifest.permission.CAMERA,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        Manifest.permission.READ_EXTERNAL_STORAGE
-    )
     
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityProfileBinding
+    private lateinit var myWebView: WebView
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -99,7 +92,7 @@ class ProfileActivity : AppCompatActivity() {
 
         // 웹뷰 추가
         binding.accountName.text = userID
-        var myWebView: WebView = findViewById(R.id.webview)
+        myWebView = findViewById(R.id.webview)
 
         myWebView.settings.javaScriptEnabled = true
         myWebView.settings.domStorageEnabled = true
@@ -108,7 +101,6 @@ class ProfileActivity : AppCompatActivity() {
         myWebView.settings.useWideViewPort = true
         myWebView.settings.loadWithOverviewMode = true
         myWebView.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
-
 
         val extraHeaders: MutableMap<String, String> = mutableMapOf()
         extraHeaders.put("Authorization", token)
@@ -219,5 +211,12 @@ class ProfileActivity : AppCompatActivity() {
         val i = Intent(this@ProfileActivity, MainActivity::class.java)
         startActivity(i)
         finish()
+    }
+    override fun onBackPressed() {
+        if(myWebView.canGoBack()){
+            myWebView.goBack()
+        }else{
+            super.onBackPressed()
+        }
     }
 }
