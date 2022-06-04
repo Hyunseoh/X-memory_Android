@@ -1,7 +1,11 @@
 package com.example.x_memory
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.ImageDecoder
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -11,6 +15,8 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.exifinterface.media.ExifInterface
 import com.amazonaws.auth.CognitoCachingCredentialsProvider
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener
@@ -35,6 +41,7 @@ import java.net.CookieManager
 private lateinit var binding: ActivityConfirmBinding
 private lateinit var pathstream : InputStream
 private lateinit var filename : String
+
 class ConfirmActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -60,14 +67,39 @@ class ConfirmActivity : AppCompatActivity() {
             .build()
         var uploadService: UploadService = retrofit.create(UploadService::class.java)
 
+        val locationmanager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
         try {
-            photoUri= getIntent().getParcelableExtra("photo")
-            val imageBitmap = photoUri?.let { ImageDecoder.createSource(this.contentResolver, it) }
-            binding.confirm.setImageBitmap(imageBitmap?.let { ImageDecoder.decodeBitmap(it) })
-            // 카메라 사진 경로, InputStream 변환
-            filename_photo = "/" + userID + "/" + photoUri?.lastPathSegment.toString()
-            pathstream = photoUri?.let { contentResolver.openInputStream(it) }!!
-            filename = photoUri?.lastPathSegment.toString()
+            val isGPSEnabled : Boolean = locationmanager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+            val isNetworkEnabled : Boolean = locationmanager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+
+            if (Build.VERSION.SDK_INT >= 23 &&
+                ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this@ConfirmActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 0)
+            } else {
+
+                photoUri = getIntent().getParcelableExtra("photo")
+                val imageBitmap =
+                    photoUri?.let { ImageDecoder.createSource(this.contentResolver, it) }
+                binding.confirm.setImageBitmap(imageBitmap?.let { ImageDecoder.decodeBitmap(it) })
+                // 카메라 사진 경로, InputStream 변환
+                filename_photo = "/" + userID + "/" + photoUri?.lastPathSegment.toString()
+                pathstream = photoUri?.let { contentResolver.openInputStream(it) }!!
+                filename = photoUri?.lastPathSegment.toString()
+
+                when {
+                    isNetworkEnabled -> {
+                        val location =
+                            locationmanager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER) //인터넷기반으로 위치를 찾음
+
+                        // 사진 찍었을 때의 위치, 경도
+                        binding.latitude.text = location?.latitude.toString()
+                        binding.longitude.text = location?.longitude.toString()
+                    }
+                }
+            }
+
+
 //            Toast.makeText(this, photoUri?.path, Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -84,6 +116,8 @@ class ConfirmActivity : AppCompatActivity() {
 
             var path = createCopyAndReturnRealPath(Imagedata!!)
             val exif = ExifInterface(path!!)
+
+            // 앨범 불러왔을 때의 위치, 경도
             binding.latitude.text = exif.latLong?.get(0).toString()
             binding.longitude.text = exif.latLong?.get(1).toString()
 
