@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.exifinterface.media.ExifInterface
 import com.amazonaws.auth.CognitoCachingCredentialsProvider
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferNetworkLossHandler
@@ -81,6 +82,11 @@ class ConfirmActivity : AppCompatActivity() {
             pathstream = Imagedata?.let { contentResolver.openInputStream(it) }!!
             filename = Imagedata?.lastPathSegment + ".jpg"
 
+            var path = createCopyAndReturnRealPath(Imagedata!!)
+            val exif = ExifInterface(path!!)
+            binding.latitude.text = exif.latLong?.get(0).toString()
+            binding.longitude.text = exif.latLong?.get(1).toString()
+
 //            https://cloud01-2.s3.us-east-2.amazonaws.com/public/hyunjin/image:24979.jpg
 
         } catch (e: Exception) {
@@ -115,6 +121,30 @@ class ConfirmActivity : AppCompatActivity() {
             })
         }
 
+    }
+
+    fun createCopyAndReturnRealPath(uri: Uri) :String? {
+        val context = applicationContext
+        val contentResolver = context.contentResolver ?: return null
+
+        // Create file path inside app's data dir
+        val filePath = (context.applicationInfo.dataDir + File.separator
+                + System.currentTimeMillis())
+        val file = File(filePath)
+        try {
+            val inputStream = contentResolver.openInputStream(uri) ?: return null
+            val outputStream: OutputStream = FileOutputStream(file)
+            val buf = ByteArray(1024)
+            var len: Int
+            while (inputStream.read(buf).also { len = it } > 0) outputStream.write(buf, 0, len)
+            outputStream.close()
+            inputStream.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+            /*  절대 경로를 getGps()에 넘겨주기   */
+//            getGps(file.getAbsolutePath())
+        }
+        return file.getAbsolutePath()
     }
 
     fun uploadWithTransferUtility(fileName: String, file: InputStream) {
