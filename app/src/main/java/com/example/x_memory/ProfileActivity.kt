@@ -2,7 +2,9 @@ package com.example.x_memory
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -123,7 +125,10 @@ class ProfileActivity : AppCompatActivity() {
             logout_function()
         }
 
+
+
         binding.cameraBtn.setOnClickListener {
+
             val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             val photoFile = File(
                 File("${filesDir}/image").apply{
