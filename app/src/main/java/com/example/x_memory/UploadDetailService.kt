@@ -14,6 +14,7 @@ interface UploadDetailService {
         @Header("Authorization") token: String?,
         @Field("latitude") latitude:String,
         @Field("longitude") longitude:String?,
+        @Field("time") time: String?,
         @Field("photo") photo_id:Int,
 
     ) : Call<UploadDetail>

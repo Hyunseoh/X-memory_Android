@@ -1,7 +1,11 @@
 package com.example.x_memory
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.ImageDecoder
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -11,6 +15,8 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.exifinterface.media.ExifInterface
 import com.amazonaws.auth.CognitoCachingCredentialsProvider
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener
@@ -39,7 +45,8 @@ import java.util.logging.Logger.global
 private lateinit var binding: ActivityConfirmBinding
 private lateinit var pathstream : InputStream
 private lateinit var filename : String
-class ConfirmActivity2 : AppCompatActivity() {
+
+class ConfirmActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,6 +61,7 @@ class ConfirmActivity2 : AppCompatActivity() {
         val userID = SharedPreferences.prefs.getString("id", "")
         var latitude = ""
         var longitude = ""
+        var time : String? = ""
         val token = "Token " + SharedPreferences.prefs.getString("token", "")
 
         val client = OkHttpClient.Builder()
@@ -68,14 +76,47 @@ class ConfirmActivity2 : AppCompatActivity() {
         var uploadService: UploadService = retrofit.create(UploadService::class.java)
         var uploadDetailService : UploadDetailService = retrofit.create(UploadDetailService::class.java)
 
+        val locationmanager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
         try {
-            photoUri= getIntent().getParcelableExtra("photo")
-            val imageBitmap = photoUri?.let { ImageDecoder.createSource(this.contentResolver, it) }
-            binding.confirm.setImageBitmap(imageBitmap?.let { ImageDecoder.decodeBitmap(it) })
-            // 카메라 사진 경로, InputStream 변환
-            filename_photo = "/" + userID + "/" + photoUri?.lastPathSegment.toString()
-            pathstream = photoUri?.let { contentResolver.openInputStream(it) }!!
-            filename = photoUri?.lastPathSegment.toString()
+            val isGPSEnabled : Boolean = locationmanager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+            val isNetworkEnabled : Boolean = locationmanager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+
+            if (Build.VERSION.SDK_INT >= 23 &&
+                ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this@ConfirmActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 0)
+            } else {
+
+                photoUri = getIntent().getParcelableExtra("photo")
+                val imageBitmap =
+                    photoUri?.let { ImageDecoder.createSource(this.contentResolver, it) }
+                binding.confirm.setImageBitmap(imageBitmap?.let { ImageDecoder.decodeBitmap(it) })
+                // 카메라 사진 경로, InputStream 변환
+                filename_photo = "/" + userID + "/" + photoUri?.lastPathSegment.toString()
+                pathstream = photoUri?.let { contentResolver.openInputStream(it) }!!
+                filename = photoUri?.lastPathSegment.toString()
+
+                when {
+                    isNetworkEnabled -> {
+                        val location =
+                            locationmanager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER) //인터넷기반으로 위치를 찾음
+
+                        // 사진 찍었을 때의 위치, 경도 (사진에 포함하는 걸 모르겠어서 찍었을 때의 정보를 가져옴)
+                        binding.latitude.text = location?.latitude.toString()
+                        binding.longitude.text = location?.longitude.toString()
+                        latitude = location?.latitude.toString()
+                        longitude = location?.longitude.toString()
+
+                        // 시간 정보 불러오기
+                        var path = createCopyAndReturnRealPath(photoUri!!)
+                        val exif = ExifInterface(path!!)
+                        time = exif.getAttribute(ExifInterface.TAG_DATETIME)
+                        binding.datetime.text = exif.getAttribute(ExifInterface.TAG_DATETIME)
+                    }
+                }
+            }
+
+
 //            Toast.makeText(this, photoUri?.path, Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -94,8 +135,12 @@ class ConfirmActivity2 : AppCompatActivity() {
             val exif = ExifInterface(path!!)
             latitude = exif.latLong?.get(0).toString()
             longitude = exif.latLong?.get(1).toString()
+            time = exif.getAttribute(ExifInterface.TAG_DATETIME)
+
+            // 앨범 불러왔을 때의 위치, 경도, 시간 (사진에 저장된 정보)
             binding.latitude.text = exif.latLong?.get(0).toString()
             binding.longitude.text = exif.latLong?.get(1).toString()
+            binding.datetime.text = exif.getAttribute(ExifInterface.TAG_DATETIME)
 
 //            https://cloud01-2.s3.us-east-2.amazonaws.com/public/hyunjin/image:24979.jpg
 
@@ -108,7 +153,7 @@ class ConfirmActivity2 : AppCompatActivity() {
         binding.downloadButton.setOnClickListener {
             GlobalScope.launch {
 
-                    uploadWithTransferUtility(filename_photo,pathstream)
+                uploadWithTransferUtility(filename_photo,pathstream)
                 async {
                     uploadService.requestUpload(token, filename).enqueue(object: Callback<Upload> {
                         override fun onFailure(call: Call<Upload>, t: Throwable) {
@@ -140,7 +185,7 @@ class ConfirmActivity2 : AppCompatActivity() {
                     var photoid = SharedPreferences.prefs.getString("photoid","")
                     Log.d("upload",photoid)
                     var photo_id = photoid.toInt()
-                    uploadDetailService.requestUploadDetail(token, latitude , longitude, photo_id).enqueue(object: Callback<UploadDetail> {
+                    uploadDetailService.requestUploadDetail(token, latitude , longitude, time, photo_id).enqueue(object: Callback<UploadDetail> {
                         override fun onFailure(call: Call<UploadDetail>, t: Throwable) {
 
                             var dialog = AlertDialog.Builder(this@ConfirmActivity)
