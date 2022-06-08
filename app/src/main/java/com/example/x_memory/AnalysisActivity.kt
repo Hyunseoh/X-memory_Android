@@ -57,40 +57,7 @@ class AnalysisActivity : AppCompatActivity() {
             }
         }
 
-        val client = OkHttpClient.Builder()
-            .cookieJar(JavaNetCookieJar(CookieManager())) //쿠키매니저 연결
-            .build()
-
-        var retrofit = Retrofit.Builder()
-            .client(client)
-            .baseUrl("http://xmemory.thdus.net")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        var profileService: ProfileService = retrofit.create(ProfileService::class.java)
-
-
-        val tag = ""
-        profileService.requestProfile(token, tag).enqueue(object: Callback<Profile> {
-            override fun onFailure(call: Call<Profile>, t: Throwable) {
-
-                var dialog = AlertDialog.Builder(this@AnalysisActivity)
-                dialog.setTitle("에러")
-                dialog.setMessage("호출에 실패했습니다")
-                dialog.show()
-            }
-
-            override fun onResponse(call: Call<Profile>, response: Response<Profile>) {
-                var profile = response.body()
-                if( profile?.code == "200") {
-                }
-                else {
-                    Toast.makeText(applicationContext, "저장 실패", Toast.LENGTH_SHORT).show()
-                }
-            }
-        })
-
-        binding.analysisView.loadUrl("http://xmemory.thdus.net/analysis/", extraHeaders)
+        binding.analysisView.loadUrl("http://xmemory.thdus.net/app_analysis/", extraHeaders)
         binding.analysisView.reload()
 
 
