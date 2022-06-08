@@ -21,6 +21,9 @@ import com.amazonaws.regions.Region
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
 import com.example.x_memory.databinding.ActivityConfirmBinding
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import okhttp3.JavaNetCookieJar
 import okhttp3.OkHttpClient
 import retrofit2.Call
@@ -30,12 +33,13 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.*
 import java.net.CookieManager
+import java.util.logging.Logger.global
 
 
 private lateinit var binding: ActivityConfirmBinding
 private lateinit var pathstream : InputStream
 private lateinit var filename : String
-class ConfirmActivity : AppCompatActivity() {
+class ConfirmActivity2 : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +52,9 @@ class ConfirmActivity : AppCompatActivity() {
         lateinit var filename_photo : String
         var Imagedata: Uri?
         val userID = SharedPreferences.prefs.getString("id", "")
+        var latitude = ""
+        var longitude = ""
+        val token = "Token " + SharedPreferences.prefs.getString("token", "")
 
         val client = OkHttpClient.Builder()
             .cookieJar(JavaNetCookieJar(CookieManager())) //쿠키매니저 연결
@@ -59,6 +66,7 @@ class ConfirmActivity : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         var uploadService: UploadService = retrofit.create(UploadService::class.java)
+        var uploadDetailService : UploadDetailService = retrofit.create(UploadDetailService::class.java)
 
         try {
             photoUri= getIntent().getParcelableExtra("photo")
@@ -84,6 +92,8 @@ class ConfirmActivity : AppCompatActivity() {
 
             var path = createCopyAndReturnRealPath(Imagedata!!)
             val exif = ExifInterface(path!!)
+            latitude = exif.latLong?.get(0).toString()
+            longitude = exif.latLong?.get(1).toString()
             binding.latitude.text = exif.latLong?.get(0).toString()
             binding.longitude.text = exif.latLong?.get(1).toString()
 
@@ -93,35 +103,76 @@ class ConfirmActivity : AppCompatActivity() {
             e.printStackTrace()
         }
 
+
+
         binding.downloadButton.setOnClickListener {
-            uploadWithTransferUtility(filename_photo,pathstream)
-            val token = "Token " + SharedPreferences.prefs.getString("token", "")
-            uploadService.requestUpload(token, filename).enqueue(object: Callback<Upload> {
-                override fun onFailure(call: Call<Upload>, t: Throwable) {
+            GlobalScope.launch {
 
-                    var dialog = AlertDialog.Builder(this@ConfirmActivity)
-                    dialog.setTitle("에러")
-                    dialog.setMessage("호출실패했습니다.")
-                    dialog.show()
-                }
+                    uploadWithTransferUtility(filename_photo,pathstream)
+                async {
+                    uploadService.requestUpload(token, filename).enqueue(object: Callback<Upload> {
+                        override fun onFailure(call: Call<Upload>, t: Throwable) {
 
-                override fun onResponse(call: Call<Upload>, response: Response<Upload>) {
-                    var upload = response.body()
-                    Log.d("upload","code : "+upload?.code)
-                    if( upload?.code == "200") {
-                        Toast.makeText(applicationContext, "저장됐습니다!", Toast.LENGTH_SHORT).show()
-                        val i = Intent(this@ConfirmActivity, ProfileActivity::class.java)
-                        startActivity(i)
-                        finish()
-                    }
-                    else {
-                        Toast.makeText(applicationContext, "저장 실패", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            })
+                            var dialog = AlertDialog.Builder(this@ConfirmActivity)
+                            dialog.setTitle("에러")
+                            dialog.setMessage("호출실패했습니다.")
+                            dialog.show()
+                        }
+
+                        override fun onResponse(call: Call<Upload>, response: Response<Upload>){
+                            var upload = response.body()
+                            Log.d("upload","id : "+upload?.id)
+                            SharedPreferences.prefs.setString("photoid",upload?.id.toString())
+
+                            if( upload?.code == "200") {
+                                Toast.makeText(applicationContext, "저장됐습니다!", Toast.LENGTH_SHORT).show()
+                                val i = Intent(this@ConfirmActivity, ProfileActivity::class.java)
+                                startActivity(i)
+                                finish()
+                            }
+                            else {
+                                Toast.makeText(applicationContext, "저장 실패", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+
+                    })
+
+                    var photoid = SharedPreferences.prefs.getString("photoid","")
+                    Log.d("upload",photoid)
+                    var photo_id = photoid.toInt()
+                    uploadDetailService.requestUploadDetail(token, latitude , longitude, photo_id).enqueue(object: Callback<UploadDetail> {
+                        override fun onFailure(call: Call<UploadDetail>, t: Throwable) {
+
+                            var dialog = AlertDialog.Builder(this@ConfirmActivity)
+                            dialog.setTitle("에러")
+                            dialog.setMessage("호출실패했습니다.")
+                            dialog.show()
+                        }
+
+                        override fun onResponse(call: Call<UploadDetail>, response: Response<UploadDetail>) {
+                            var uploadDetail = response.body()
+                            Log.d("uploadDetail","code : "+uploadDetail?.code)
+                            if( uploadDetail?.code == "200") {
+                            }
+                            else {
+                                Toast.makeText(applicationContext, "저장 실패", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    })
+                }.await()
+
+                async {
+
+                }.await()
+            }
+
+
         }
 
+
+
     }
+
 
     fun createCopyAndReturnRealPath(uri: Uri) :String? {
         val context = applicationContext
