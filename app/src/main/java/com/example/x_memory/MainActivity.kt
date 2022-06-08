@@ -68,6 +68,7 @@ class MainActivity : AppCompatActivity() {
         val v1 = findViewById<View>(R.id.v1)
         val v2 = findViewById<View>(R.id.v2)
         val v3 = findViewById<View>(R.id.v3)
+        val v4 = findViewById<View>(R.id.v4)
 
 //        AmplifyInit().intializeAmplify(this@MainActivity)
 
@@ -93,6 +94,32 @@ class MainActivity : AppCompatActivity() {
 
         v1.setOnClickListener {
             if (selectedIndex == 0) {
+                val profileIntent = Intent(this, ProfileActivity::class.java)
+                startActivity(profileIntent)
+            }
+            if (selectedIndex == 1) {
+                motionLayout.setTransition(R.id.s2, R.id.s1) //orange to blue transition
+                motionLayout.transitionToEnd()
+            }
+            selectedIndex = 0;
+        }
+        v2.setOnClickListener {
+            if (selectedIndex == 1) {
+                val analysisIntent = Intent(this, AnalysisActivity::class.java)
+                startActivity(analysisIntent)
+            }
+
+            if (selectedIndex == 2) {
+                motionLayout.setTransition(R.id.s3, R.id.s2)  //red to orange transition
+            }
+            if (selectedIndex == 0){
+                motionLayout.setTransition(R.id.s1, R.id.s2) //blue to orange transition
+            }
+            motionLayout.transitionToEnd()
+            selectedIndex = 1;
+        }
+        v3.setOnClickListener {
+            if (selectedIndex == 2) {
 
                 val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 val photoFile = File(
@@ -113,40 +140,33 @@ class MainActivity : AppCompatActivity() {
                     startActivityForResult(takePictureIntent, CAMERA)
                 }
 
-            }
-            if (selectedIndex == 1) {
-                motionLayout.setTransition(R.id.s2, R.id.s1) //orange to blue transition
-                motionLayout.transitionToEnd()
-            }
-            selectedIndex = 0;
-        }
-        v2.setOnClickListener {
-            if (selectedIndex == 1) {
-                val intent = Intent(Intent.ACTION_GET_CONTENT)
-                intent.setType("image/*")
-                startActivityForResult(intent,GALLERY)
-            }
 
-            if (selectedIndex == 2) {
-                motionLayout.setTransition(R.id.s3, R.id.s2)  //red to orange transition
-            }
-            if (selectedIndex == 0){
-                motionLayout.setTransition(R.id.s1, R.id.s2) //blue to orange transition
-            }
-            motionLayout.transitionToEnd()
-            selectedIndex = 1;
-        }
-        v3.setOnClickListener {
-            if (selectedIndex == 2) {
-                val profileIntent = Intent(this, ProfileActivity::class.java)
-                startActivity(profileIntent)
             }
 
             if (selectedIndex == 1) {
                 motionLayout.setTransition(R.id.s2, R.id.s3) //orange to red transition
                 motionLayout.transitionToEnd()
             }
+
+            if (selectedIndex == 3) {
+                motionLayout.setTransition(R.id.s4, R.id.s3) //orange to red transition
+                motionLayout.transitionToEnd()
+            }
             selectedIndex = 2;
+        }
+
+        v4.setOnClickListener {
+            if (selectedIndex == 3) {
+                val intent = Intent(Intent.ACTION_GET_CONTENT)
+                intent.setType("image/*")
+                startActivityForResult(intent,GALLERY)
+            }
+
+            if (selectedIndex == 2) {
+                motionLayout.setTransition(R.id.s3, R.id.s4) //orange to red transition
+                motionLayout.transitionToEnd()
+            }
+            selectedIndex = 3;
         }
 
     }
