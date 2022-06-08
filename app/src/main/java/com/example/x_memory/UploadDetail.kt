@@ -1,7 +1,6 @@
 package com.example.x_memory
 
-data class Upload(
-    val id : Int,
+data class UploadDetail(
     val code: String,
     val msg: String,
 )
