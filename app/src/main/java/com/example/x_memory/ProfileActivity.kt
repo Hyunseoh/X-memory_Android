@@ -94,20 +94,18 @@ class ProfileActivity : AppCompatActivity() {
 
         // 웹뷰 추가
         binding.accountName.text = userID
-        myWebView = findViewById(R.id.webview)
-
-        myWebView.settings.javaScriptEnabled = true
-        myWebView.settings.domStorageEnabled = true
-        myWebView.settings.builtInZoomControls = true
-        myWebView.settings.displayZoomControls = true
-        myWebView.settings.useWideViewPort = true
-        myWebView.settings.loadWithOverviewMode = true
-        myWebView.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
+        binding.webview.settings.javaScriptEnabled = true
+        binding.webview.settings.domStorageEnabled = true
+        binding.webview.settings.builtInZoomControls = true
+        binding.webview.settings.displayZoomControls = true
+        binding.webview.settings.useWideViewPort = true
+        binding.webview.settings.loadWithOverviewMode = true
+        binding.webview.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
 
         val extraHeaders: MutableMap<String, String> = mutableMapOf()
         extraHeaders.put("Authorization", token)
 
-        myWebView?.webViewClient = object : WebViewClient() {
+        binding.webview?.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(
                 view: WebView?,
                 url: String?
@@ -118,8 +116,8 @@ class ProfileActivity : AppCompatActivity() {
                 return false
             }
         }
-        myWebView.loadUrl("http://xmemory.thdus.net/app_index/", extraHeaders)
-        myWebView.reload()
+        binding.webview.loadUrl("http://xmemory.thdus.net/app_index/", extraHeaders)
+        binding.webview.reload()
 
         binding.btnLogout.setOnClickListener {
             logout_function()
@@ -218,8 +216,8 @@ class ProfileActivity : AppCompatActivity() {
         finish()
     }
     override fun onBackPressed() {
-        if(myWebView.canGoBack()){
-            myWebView.goBack()
+        if(binding.webview.canGoBack()){
+            binding.webview.goBack()
         }else{
             super.onBackPressed()
         }
