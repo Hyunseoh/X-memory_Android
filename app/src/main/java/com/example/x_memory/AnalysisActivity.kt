@@ -56,12 +56,8 @@ class AnalysisActivity : AppCompatActivity() {
                 return false
             }
         }
-
         binding.analysisView.loadUrl("http://xmemory.thdus.net/app_analysis/", extraHeaders)
         binding.analysisView.reload()
-
-
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
