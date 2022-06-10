@@ -57,12 +57,14 @@ class ConfirmActivity : AppCompatActivity() {
 
         var photoUri : Uri?
         lateinit var filename_photo : String
+        lateinit var profile_photo : String
         var Imagedata: Uri?
         val userID = SharedPreferences.prefs.getString("id", "")
         var latitude = ""
         var longitude = ""
         var time : String? = ""
         val token = "Token " + SharedPreferences.prefs.getString("token", "")
+        var image_id: String? = ""
 
         val client = OkHttpClient.Builder()
             .cookieJar(JavaNetCookieJar(CookieManager())) //쿠키매니저 연결
@@ -86,13 +88,14 @@ class ConfirmActivity : AppCompatActivity() {
                 ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this@ConfirmActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 0)
             } else {
-
+                image_id = intent.getStringExtra("image_id")
                 photoUri = getIntent().getParcelableExtra("photo")
                 val imageBitmap =
                     photoUri?.let { ImageDecoder.createSource(this.contentResolver, it) }
                 binding.confirm.setImageBitmap(imageBitmap?.let { ImageDecoder.decodeBitmap(it) })
                 // 카메라 사진 경로, InputStream 변환
                 filename_photo = "/" + userID + "/" + photoUri?.lastPathSegment.toString()
+                profile_photo = "/" + userID + "/profile/" + photoUri?.lastPathSegment.toString()
                 pathstream = photoUri?.let { contentResolver.openInputStream(it) }!!
                 filename = photoUri?.lastPathSegment.toString()
 
@@ -124,10 +127,12 @@ class ConfirmActivity : AppCompatActivity() {
 
         try {
             Imagedata = getIntent().getParcelableExtra("album")
+            image_id = intent.getStringExtra("image_id")
             val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, Imagedata)
             binding.confirm.setImageBitmap(bitmap)
             // 앨범 사진 경로, InputStream 변환
             filename_photo = "/" + userID + "/" + Imagedata?.lastPathSegment + ".jpg"
+            profile_photo = "/" + userID + "/profile/" + Imagedata?.lastPathSegment + ".jpg"
             pathstream = Imagedata?.let { contentResolver.openInputStream(it) }!!
             filename = Imagedata?.lastPathSegment + ".jpg"
 
@@ -152,9 +157,63 @@ class ConfirmActivity : AppCompatActivity() {
 
         binding.downloadButton.setOnClickListener {
             GlobalScope.launch {
+                if(image_id.equals("")){
+                    async {
+                        uploadWithTransferUtility(filename_photo,pathstream)
+                        uploadService.requestUpload(token, filename).enqueue(object: Callback<Upload> {
+                            override fun onFailure(call: Call<Upload>, t: Throwable) {
 
-                uploadWithTransferUtility(filename_photo,pathstream)
-                async {
+                                var dialog = AlertDialog.Builder(this@ConfirmActivity)
+                                dialog.setTitle("에러")
+                                dialog.setMessage("호출실패했습니다.")
+                                dialog.show()
+                            }
+
+                            override fun onResponse(call: Call<Upload>, response: Response<Upload>){
+                                var upload = response.body()
+                                Log.d("upload","id : "+upload?.id)
+                                SharedPreferences.prefs.setString("photoid",upload?.id.toString())
+
+                                if( upload?.code == "200") {
+                                    Toast.makeText(applicationContext, "저장됐습니다!", Toast.LENGTH_SHORT).show()
+                                    val i = Intent(this@ConfirmActivity, ProfileActivity::class.java)
+                                    startActivity(i)
+                                    finish()
+                                }
+                                else {
+                                    Toast.makeText(applicationContext, "저장 실패", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+
+                        })
+
+                        var photoid = SharedPreferences.prefs.getString("photoid","")
+                        Log.d("upload",photoid)
+                        var photo_id = photoid.toInt()
+                        uploadDetailService.requestUploadDetail(token, latitude , longitude, time, photo_id).enqueue(object: Callback<UploadDetail> {
+                            override fun onFailure(call: Call<UploadDetail>, t: Throwable) {
+
+                                var dialog = AlertDialog.Builder(this@ConfirmActivity)
+                                dialog.setTitle("에러")
+                                dialog.setMessage("호출실패했습니다.")
+                                dialog.show()
+                            }
+
+                            override fun onResponse(call: Call<UploadDetail>, response: Response<UploadDetail>) {
+                                var uploadDetail = response.body()
+                                Log.d("uploadDetail","code : "+uploadDetail?.code)
+                                if( uploadDetail?.code == "200") {
+                                }
+                                else {
+//                                    Toast.makeText(applicationContext, "저장 실패", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        })
+                    }.await()
+                }else{
+                    // 프로필 사진 저장 api
+                    uploadWithTransferUtility(profile_photo,pathstream)
+                    filename = "profile/"+ filename
                     uploadService.requestUpload(token, filename).enqueue(object: Callback<Upload> {
                         override fun onFailure(call: Call<Upload>, t: Throwable) {
 
@@ -172,43 +231,18 @@ class ConfirmActivity : AppCompatActivity() {
                             if( upload?.code == "200") {
                                 Toast.makeText(applicationContext, "저장됐습니다!", Toast.LENGTH_SHORT).show()
                                 val i = Intent(this@ConfirmActivity, ProfileActivity::class.java)
+                                i.putExtra("filename", filename)
                                 startActivity(i)
                                 finish()
                             }
                             else {
-                                Toast.makeText(applicationContext, "저장 실패", Toast.LENGTH_SHORT).show()
+//                                Toast.makeText(applicationContext, "저장 실패", Toast.LENGTH_SHORT).show()
                             }
                         }
 
                     })
+                }
 
-                    var photoid = SharedPreferences.prefs.getString("photoid","")
-                    Log.d("upload",photoid)
-                    var photo_id = photoid.toInt()
-                    uploadDetailService.requestUploadDetail(token, latitude , longitude, time, photo_id).enqueue(object: Callback<UploadDetail> {
-                        override fun onFailure(call: Call<UploadDetail>, t: Throwable) {
-
-                            var dialog = AlertDialog.Builder(this@ConfirmActivity)
-                            dialog.setTitle("에러")
-                            dialog.setMessage("호출실패했습니다.")
-                            dialog.show()
-                        }
-
-                        override fun onResponse(call: Call<UploadDetail>, response: Response<UploadDetail>) {
-                            var uploadDetail = response.body()
-                            Log.d("uploadDetail","code : "+uploadDetail?.code)
-                            if( uploadDetail?.code == "200") {
-                            }
-                            else {
-                                Toast.makeText(applicationContext, "저장 실패", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    })
-                }.await()
-
-                async {
-
-                }.await()
             }
 
 
