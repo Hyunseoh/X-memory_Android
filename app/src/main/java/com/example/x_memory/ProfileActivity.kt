@@ -9,19 +9,28 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.navigation.ui.AppBarConfiguration
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.signature.ObjectKey
 import com.example.x_memory.databinding.ActivityProfileBinding
 import kotlinx.android.synthetic.main.activity_profile.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import okhttp3.JavaNetCookieJar
 import okhttp3.OkHttpClient
 import okhttp3.internal.notifyAll
@@ -45,6 +54,9 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityProfileBinding
     private lateinit var myWebView: WebView
+    private var image_id = ""
+    // 2번 뒤로가기 변수
+    var bacKeyPressedTime : Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -57,6 +69,7 @@ class ProfileActivity : AppCompatActivity() {
         val token = "Token " + SharedPreferences.prefs.getString("token", "")
         binding.accountName.text = userID
         val tag = ""
+        var profileImage : String = "https://d1e6tpyhrf8oqe.cloudfront.net"
 
         // retrofit
         val client = OkHttpClient.Builder()
@@ -71,6 +84,7 @@ class ProfileActivity : AppCompatActivity() {
 
         var profileService: ProfileService = retrofit.create(ProfileService::class.java)
 
+
         profileService.requestProfile(token, tag).enqueue(object: Callback<Profile> {
             override fun onFailure(call: Call<Profile>, t: Throwable) {
 
@@ -84,12 +98,68 @@ class ProfileActivity : AppCompatActivity() {
                 var profile = response.body()
                 if( profile?.code == "200") {
                     binding.accountCount.text = profile?.count.toString()
+                    var filename = profile?.filename.substring(44,)
+                    profileImage += filename
+                    val options = RequestOptions().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE)
+                    //프로필 이미지 등록
+                    Glide.with(applicationContext).load(profileImage)
+                        .apply(options)
+                        .error(R.drawable.ic_account)
+                        .circleCrop()
+                        .into(account_iv_profile)
                 }
                 else {
                     Toast.makeText(applicationContext, "저장 실패", Toast.LENGTH_SHORT).show()
                 }
             }
         })
+        // 프로필 이미지 웹뷰 버튼
+
+
+
+
+
+
+        binding.accountIvProfile.setOnClickListener {
+
+            // Dialog만들기
+            val mDialogView = LayoutInflater.from(this).inflate(R.layout.dialog, null)
+            val mBuilder = AlertDialog.Builder(this)
+                .setView(mDialogView)
+            val mAlertDialog = mBuilder.show()
+
+            val okButton = mDialogView.findViewById<Button>(R.id.successButton)
+            okButton.setOnClickListener {
+                val intent = Intent(Intent.ACTION_GET_CONTENT)
+                image_id = "ok"
+                intent.setType("image/*")
+                startActivityForResult(intent,GALLERY)
+            }
+
+            val noButton = mDialogView.findViewById<Button>(R.id.closeButton)
+            noButton.setOnClickListener {
+                image_id = "ok"
+                val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                val photoFile = File(
+                    File("${filesDir}/image").apply{
+                        if(!this.exists()){
+                            this.mkdirs()
+                        }
+                    },
+                    newJpgFileName()
+                )
+                photoUri = FileProvider.getUriForFile(
+                    this,
+                    "com.example.x_memory.fileprovider",
+                    photoFile
+                )
+                takePictureIntent.resolveActivity(packageManager)?.also{
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+                    startActivityForResult(takePictureIntent, CAMERA)
+                }
+            }
+        }
+
 
 
         // 웹뷰 추가
@@ -157,10 +227,12 @@ class ProfileActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
+            Log.d("image",image_id)
             when (requestCode) {
                 CAMERA -> {
                     val i = Intent(this@ProfileActivity, ConfirmActivity::class.java)
                     i.putExtra("photo", photoUri)
+                    i.putExtra("image_id", image_id)
                     startActivity(i)
                 }
                 GALLERY -> {
@@ -168,6 +240,7 @@ class ProfileActivity : AppCompatActivity() {
                     try {
                         val i = Intent(this@ProfileActivity, ConfirmActivity::class.java)
                         i.putExtra("album", Imagedata)
+                        i.putExtra("image_id", image_id)
                         startActivity(i)
                     } catch (e:Exception) { e.printStackTrace() }
 
@@ -219,7 +292,17 @@ class ProfileActivity : AppCompatActivity() {
         if(binding.webview.canGoBack()){
             binding.webview.goBack()
         }else{
-            super.onBackPressed()
+
+            if(System.currentTimeMillis() < bacKeyPressedTime + 2500){
+                finishAffinity()
+
+                return
+            }
+            Toast.makeText(applicationContext, "'뒤로' 버튼을 한번 더 누르시면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show()
+            bacKeyPressedTime = System.currentTimeMillis()
+            //super.onBackPressed()
         }
     }
+
+
 }
