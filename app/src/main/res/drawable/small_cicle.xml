@@ -4,7 +4,7 @@
     android:useLevel="false" >
 
     <gradient
-        android:startColor="#38b5f2"
+        android:startColor="#ECABD6"
         android:endColor="#6e5ff6"/>
     <size
         android:height="50dp"
