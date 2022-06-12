@@ -26,7 +26,7 @@
             android:layout_toRightOf="@+id/account_iv_profile"
             android:background="@drawable/button_round"
             android:text="Logout"
-            android:textColor="#E521F3" />
+            android:textColor="#E28CE8" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -95,7 +95,7 @@
             android:drawableTop="@drawable/ic_camera"
             android:paddingTop="5dp"
             android:text="카메라에서 추가"
-            android:textColor="#E521F3"
+            android:textColor="#E28CE8"
             android:textSize="18sp" />
 
         <androidx.appcompat.widget.AppCompatButton
@@ -108,7 +108,7 @@
             android:drawableTop="@drawable/ic_album"
             android:paddingTop="5dp"
             android:text="앨범에서 추가"
-            android:textColor="#E521F3"
+            android:textColor="#E28CE8"
             android:textSize="18sp" />
     </LinearLayout>
 
