@@ -56,7 +56,7 @@ class AnalysisActivity : AppCompatActivity() {
                 return false
             }
         }
-        binding.analysisView.loadUrl("http://xmemory.thdus.net/app_analysis/", extraHeaders)
+        binding.analysisView.loadUrl("http://xmemory.thdus.net/analysis/", extraHeaders)
         binding.analysisView.reload()
     }
 

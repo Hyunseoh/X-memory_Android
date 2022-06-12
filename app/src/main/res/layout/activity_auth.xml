@@ -73,7 +73,7 @@
             <View
                 android:layout_width="5.6dp"
                 android:layout_height="300dp"
-                android:background="#38b5f2" />
+                android:background="#E521F3" />
 
 
             <LinearLayout
@@ -260,7 +260,7 @@
                 android:layout_marginLeft="5dp"
                 android:gravity="center_horizontal"
                 android:text="회원가입"
-                android:textColor="#38b5f2"
+                android:textColor="#E521F3"
                 android:textSize="13.3sp" />
 
         </LinearLayout>

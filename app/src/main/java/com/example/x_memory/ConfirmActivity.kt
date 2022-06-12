@@ -105,8 +105,8 @@ class ConfirmActivity : AppCompatActivity() {
                             locationmanager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER) //인터넷기반으로 위치를 찾음
 
                         // 사진 찍었을 때의 위치, 경도 (사진에 포함하는 걸 모르겠어서 찍었을 때의 정보를 가져옴)
-                        binding.latitude.text = location?.latitude.toString()
-                        binding.longitude.text = location?.longitude.toString()
+//                        binding.latitude.text = location?.latitude.toString()
+//                        binding.longitude.text = location?.longitude.toString()
                         latitude = location?.latitude.toString()
                         longitude = location?.longitude.toString()
 
@@ -114,7 +114,7 @@ class ConfirmActivity : AppCompatActivity() {
                         var path = createCopyAndReturnRealPath(photoUri!!)
                         val exif = ExifInterface(path!!)
                         time = exif.getAttribute(ExifInterface.TAG_DATETIME)
-                        binding.datetime.text = exif.getAttribute(ExifInterface.TAG_DATETIME)
+//                        binding.datetime.text = exif.getAttribute(ExifInterface.TAG_DATETIME)
                     }
                 }
             }
@@ -143,9 +143,9 @@ class ConfirmActivity : AppCompatActivity() {
             time = exif.getAttribute(ExifInterface.TAG_DATETIME)
 
             // 앨범 불러왔을 때의 위치, 경도, 시간 (사진에 저장된 정보)
-            binding.latitude.text = exif.latLong?.get(0).toString()
-            binding.longitude.text = exif.latLong?.get(1).toString()
-            binding.datetime.text = exif.getAttribute(ExifInterface.TAG_DATETIME)
+//            binding.latitude.text = exif.latLong?.get(0).toString()
+//            binding.longitude.text = exif.latLong?.get(1).toString()
+//            binding.datetime.text = exif.getAttribute(ExifInterface.TAG_DATETIME)
 
 //            https://cloud01-2.s3.us-east-2.amazonaws.com/public/hyunjin/image:24979.jpg
 

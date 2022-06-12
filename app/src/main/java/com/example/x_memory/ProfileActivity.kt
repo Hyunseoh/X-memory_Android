@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
@@ -12,14 +13,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
-import android.webkit.WebResourceRequest
-import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.navigation.ui.AppBarConfiguration
 import com.bumptech.glide.Glide
@@ -50,6 +50,7 @@ class ProfileActivity : AppCompatActivity() {
     private val GALLERY = 200
 
     private var photoUri: Uri? = null
+    val PERMISSIONS_REQUEST = 100
     
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityProfileBinding
@@ -58,11 +59,18 @@ class ProfileActivity : AppCompatActivity() {
     // 2번 뒤로가기 변수
     var bacKeyPressedTime : Long = 0
 
+    val PERMISSIONS = arrayOf(
+        Manifest.permission.CAMERA,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        checkPermissions(PERMISSIONS, PERMISSIONS_REQUEST)
 
         // 저장된 id,token 불러오기
         val userID = SharedPreferences.prefs.getString("id", "")
@@ -172,6 +180,8 @@ class ProfileActivity : AppCompatActivity() {
         binding.webview.settings.loadWithOverviewMode = true
         binding.webview.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
 
+
+
         val extraHeaders: MutableMap<String, String> = mutableMapOf()
         extraHeaders.put("Authorization", token)
 
@@ -186,14 +196,13 @@ class ProfileActivity : AppCompatActivity() {
                 return false
             }
         }
+        binding.webview.webChromeClient = WebChromeClient()
         binding.webview.loadUrl("http://xmemory.thdus.net/app_index/", extraHeaders)
         binding.webview.reload()
 
         binding.btnLogout.setOnClickListener {
             logout_function()
         }
-
-
 
         binding.cameraBtn.setOnClickListener {
 
@@ -223,6 +232,7 @@ class ProfileActivity : AppCompatActivity() {
             startActivityForResult(intent,GALLERY)
         }
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -255,7 +265,22 @@ class ProfileActivity : AppCompatActivity() {
         return "${filename}.jpg"
     }
 
-
+    private fun checkPermissions(permissions: Array<String>, permissionsRequest: Int): Boolean {
+        val permissionList: MutableList<String> = mutableListOf()
+        for (permission in permissions) {
+            val result = ContextCompat.checkSelfPermission(this, permission)
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                permissionList.add(permission)
+            }
+        }
+        if (permissionList.isNotEmpty()) {
+            ActivityCompat.requestPermissions(
+                this,
+                permissionList.toTypedArray(), PERMISSIONS_REQUEST)
+            return false
+        }
+        return true
+    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
