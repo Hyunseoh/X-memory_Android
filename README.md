@@ -19,8 +19,6 @@ AI 태그 검출 기반 스마트 앨범
 
 Django 연계 작업 링크 : https://github.com/quantumleapj/X-travel-django
 
-서비스 소개 영상 링크 : https://drive.google.com/file/d/1Tdiyhh233sbwjgjKQeHjLjAnJJf1xl__/view?usp=sharing
+서비스 소개 영상 링크 : https://drive.google.com/file/d/1_Xt16XLBnpYm0fV7CMPP3yguIucyZbWc/view?usp=sharing
 
-
-
-수상기록 : 융복합 프로젝트 경진대회 최우수상
+수상기록 : 융복합 프로젝트 경진대회 우수상
