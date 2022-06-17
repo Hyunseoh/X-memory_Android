@@ -13,8 +13,8 @@ AI 태그 검출 기반 스마트 앨범
 
 ### 팀원
 - IoT : 정현진(팀장), 정희정
-- Cloud : 유상수, 전소연
-- BIGDATA : 김세윤, 박세연, 한서현 
+- Cloud : 전소연, 유상수
+- BIGDATA : 한서현, 박세연, 김세윤 
 - AI : 윤수진, 이상헌
 
 Django 연계 작업 링크 : https://github.com/quantumleapj/X-travel-django
