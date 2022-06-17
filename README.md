@@ -68,6 +68,3 @@ https://drive.google.com/file/d/1RS00YvdGviI59aQ3ux-9x8oN8WX34DG7/view?usp=shari
 <br />
 
 ## 사진 업로드
-<div align=center>
-https://user-images.githubusercontent.com/70462939/174255809-09511ba9-5726-4288-a748-8f7e19014b06.mov
-</div>
