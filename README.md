@@ -21,4 +21,7 @@ Django 연계 작업 링크 : https://github.com/quantumleapj/X-travel-django
 
 서비스 소개 영상 링크 : https://drive.google.com/file/d/1_Xt16XLBnpYm0fV7CMPP3yguIucyZbWc/view?usp=sharing
 
-수상기록 : 융복합 프로젝트 경진대회 우수상
+### 수상기록
+융복합 프로젝트 경진대회 우수상
+
+(ppt 내용 추가, 우수상 상장 기념사진)
