@@ -67,4 +67,4 @@ https://drive.google.com/file/d/1RS00YvdGviI59aQ3ux-9x8oN8WX34DG7/view?usp=shari
 </div>
 <br />
 
-## 사진 업로드 (영상 추가 예정)
+## 사진 업로드 (영상 추가)
