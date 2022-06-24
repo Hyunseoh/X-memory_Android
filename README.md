@@ -67,10 +67,28 @@ https://drive.google.com/file/d/1RS00YvdGviI59aQ3ux-9x8oN8WX34DG7/view?usp=shari
 </div>
 <br />
 
-## 사진 업로드
-
-![업로드](https://user-images.githubusercontent.com/70462939/175502503-33023c5d-b877-426d-9a98-95b2f506e905.gif)
-![케이크](https://user-images.githubusercontent.com/70462939/175502693-280200f1-8c3a-4b54-ac4d-7e3644ed6cfb.gif)
+## 사진 업로드(아이유 & 케이크)
+<div align=center>
+<img src="https://user-images.githubusercontent.com/70462939/175502503-33023c5d-b877-426d-9a98-95b2f506e905.gif"  width="300" height="500"/>
+&nbsp;&nbsp;&nbsp;
+<img src="https://user-images.githubusercontent.com/70462939/175502693-280200f1-8c3a-4b54-ac4d-7e3644ed6cfb.gif"  width="300" height="500"/>
+</div>
 <br />
 
 ## 태그 추가 & 태그 검색
+<div align=center>
+<img src="https://user-images.githubusercontent.com/70462939/175504066-7507aef0-6cc1-4181-8680-7ae749235783.gif"  width="300" height="500"/>
+&nbsp;&nbsp;&nbsp;
+<img src="https://user-images.githubusercontent.com/70462939/175504069-c373c888-d086-4bd1-8b1c-e46dbdebd7ca.gif"  width="300" height="500"/>
+</div>
+<br />
+
+## 데이터 분석 & 시간 분석 & 장소 분석
+<div align=center>
+<img src="https://user-images.githubusercontent.com/70462939/175504386-5a2b7dc3-e8c9-444b-ae64-4cfd75477ab7.gif"  width="300" height="500"/>
+&nbsp;&nbsp;&nbsp;
+<img src="https://user-images.githubusercontent.com/70462939/175504392-d564d985-3c63-45bb-8fe4-cfb6058aad27.gif"  width="300" height="500"/>
+&nbsp;&nbsp;&nbsp;
+<img src="https://user-images.githubusercontent.com/70462939/175504399-977b7eb1-ad92-48a8-ae82-5e31b6da0025.gif"  width="300" height="500"/>
+</div>
+<br />
