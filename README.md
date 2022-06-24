@@ -92,3 +92,22 @@ https://drive.google.com/file/d/1RS00YvdGviI59aQ3ux-9x8oN8WX34DG7/view?usp=shari
 <img src="https://user-images.githubusercontent.com/70462939/175504399-977b7eb1-ad92-48a8-ae82-5e31b6da0025.gif"  width="300" height="500"/>
 </div>
 <br />
+
+## 프로젝트 성과
+<div align=center>
+<img width="700" alt="스크린샷 2022-06-17 오후 4 58 10" src="https://user-images.githubusercontent.com/70462939/175505201-49521043-ef2d-4c1f-99e1-751b60e77c6d.jpg">
+
+<br />
+
+<img width="700" alt="스크린샷 2022-06-24 오후 6 18 09" src="https://user-images.githubusercontent.com/70462939/175505218-e7b03804-f9d9-470e-b982-b17ab3911670.png">
+</div>
+<br />
+
+## 참고 문헌
+
+- AWS Cloud architecture for web hosting https://docs.aws.amazon.com/ko_kr/whitepapers/latest/web-application-hosting-best-practices/an-aws- cloud-architecture-for-web-hosting.html
+- Reference architecture https://docs.aws.amazon.com/ko_kr/whitepapers/latest/best-practices-wordpress/reference- architecture.html
+- Container-based game backend architecture https://docs.aws.amazon.com/ko_kr/wellarchitected/latest/games-industry-lens/container-based- backend.html
+- 클라우드 네이티브 기반 사진 공유 애플리케이션 https://www.youtube.com/watch?v=piQI4Hs2jmk
+- 합성곱신경망을 활용한 SNS 사진 분류 및 관광객과 거주자의 관광 활동 특성 분석 https://www.dbpia.co.kr/Journal/articleDetail?nodeId=NODE10575893
+<br />
