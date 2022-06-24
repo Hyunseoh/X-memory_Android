@@ -105,9 +105,9 @@ https://drive.google.com/file/d/1RS00YvdGviI59aQ3ux-9x8oN8WX34DG7/view?usp=shari
 
 ## 참고 문헌
 
-- AWS Cloud architecture for web hosting https://docs.aws.amazon.com/ko_kr/whitepapers/latest/web-application-hosting-best-practices/an-aws- cloud-architecture-for-web-hosting.html
-- Reference architecture https://docs.aws.amazon.com/ko_kr/whitepapers/latest/best-practices-wordpress/reference- architecture.html
-- Container-based game backend architecture https://docs.aws.amazon.com/ko_kr/wellarchitected/latest/games-industry-lens/container-based- backend.html
+- AWS Cloud architecture for web hosting https://docs.aws.amazon.com/ko_kr/whitepapers/latest/web-application-hosting-best-practices/an-aws-cloud-architecture-for-web-hosting.html
+- Reference architecture https://docs.aws.amazon.com/ko_kr/whitepapers/latest/best-practices-wordpress/reference-architecture.html
+- Container-based game backend architecture https://docs.aws.amazon.com/ko_kr/wellarchitected/latest/games-industry-lens/container-based-backend.html
 - 클라우드 네이티브 기반 사진 공유 애플리케이션 https://www.youtube.com/watch?v=piQI4Hs2jmk
 - 합성곱신경망을 활용한 SNS 사진 분류 및 관광객과 거주자의 관광 활동 특성 분석 https://www.dbpia.co.kr/Journal/articleDetail?nodeId=NODE10575893
 <br />
