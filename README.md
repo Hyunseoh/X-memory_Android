@@ -111,3 +111,4 @@ https://drive.google.com/file/d/1RS00YvdGviI59aQ3ux-9x8oN8WX34DG7/view?usp=shari
 - 클라우드 네이티브 기반 사진 공유 애플리케이션 https://www.youtube.com/watch?v=piQI4Hs2jmk
 - 합성곱신경망을 활용한 SNS 사진 분류 및 관광객과 거주자의 관광 활동 특성 분석 https://www.dbpia.co.kr/Journal/articleDetail?nodeId=NODE10575893
 <br />
+<br />
