@@ -67,4 +67,10 @@ https://drive.google.com/file/d/1RS00YvdGviI59aQ3ux-9x8oN8WX34DG7/view?usp=shari
 </div>
 <br />
 
-## 사진 업로드 (영상 추가)
+## 사진 업로드
+
+![업로드](https://user-images.githubusercontent.com/70462939/175502503-33023c5d-b877-426d-9a98-95b2f506e905.gif)
+![케이크](https://user-images.githubusercontent.com/70462939/175502693-280200f1-8c3a-4b54-ac4d-7e3644ed6cfb.gif)
+<br />
+
+## 태그 추가 & 태그 검색
