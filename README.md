@@ -93,7 +93,7 @@ https://drive.google.com/file/d/1RS00YvdGviI59aQ3ux-9x8oN8WX34DG7/view?usp=shari
 </div>
 <br />
 
-## 프로젝트 성과
+## 프로젝트 성과 😍
 <div align=center>
 <img width="700" alt="스크린샷 2022-06-17 오후 4 58 10" src="https://user-images.githubusercontent.com/70462939/175505201-49521043-ef2d-4c1f-99e1-751b60e77c6d.jpg">
 
