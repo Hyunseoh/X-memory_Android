@@ -85,11 +85,11 @@ https://drive.google.com/file/d/1RS00YvdGviI59aQ3ux-9x8oN8WX34DG7/view?usp=shari
 
 ## 데이터 분석 & 시간 분석 & 장소 분석
 <div align=center>
-<img src="https://user-images.githubusercontent.com/70462939/175504386-5a2b7dc3-e8c9-444b-ae64-4cfd75477ab7.gif"  width="300" height="500"/>
+<img src="https://user-images.githubusercontent.com/70462939/175504386-5a2b7dc3-e8c9-444b-ae64-4cfd75477ab7.gif"  width="200" height="450"/>
 &nbsp;&nbsp;&nbsp;
-<img src="https://user-images.githubusercontent.com/70462939/175504392-d564d985-3c63-45bb-8fe4-cfb6058aad27.gif"  width="300" height="500"/>
+<img src="https://user-images.githubusercontent.com/70462939/175504392-d564d985-3c63-45bb-8fe4-cfb6058aad27.gif"  width="200" height="450"/>
 &nbsp;&nbsp;&nbsp;
-<img src="https://user-images.githubusercontent.com/70462939/175504399-977b7eb1-ad92-48a8-ae82-5e31b6da0025.gif"  width="300" height="500"/>
+<img src="https://user-images.githubusercontent.com/70462939/175504399-977b7eb1-ad92-48a8-ae82-5e31b6da0025.gif"  width="200" height="450"/>
 </div>
 <br />
 
